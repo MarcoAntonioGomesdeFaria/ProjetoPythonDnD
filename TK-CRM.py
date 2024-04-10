@@ -114,7 +114,7 @@ btn_inserirequipamentos.grid(row=5, column=2)
 
 #----------------------------------------LABELS----------------------------------------
 
-lbl = Label(root,text='FICHA DE PERSONAGEM',font='roboto')
+lbl = Label(root,text='Ficha De Personagem',font='roboto')
 lbl.grid(row='0',column='1')
 
 lbl = Label(root,text='Nome')
