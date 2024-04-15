@@ -3,16 +3,21 @@ from PIL import ImageTk,Image
 import mysql.connector
 
 
+
 root = Tk()
 root.geometry("920x720")
 root.title('teste')
 
 #----------------------------------------CONFIGURANDO DATABASE----------------------------------------
+
 my_db = mysql.connector.connect(host="localhost", user="root", passwd="ma0506",database='dnddb',)
 cursor = my_db.cursor()
 
 
 #----------------------------------------FUNÇOES----------------------------------------
+
+
+
 
 def add_personagem(nome,vida,ca,classe,id):
     my_db = mysql.connector.connect(host="localhost", user="root", passwd="ma0506", database='dnddb', )
@@ -62,53 +67,77 @@ def search_magic(magic):
     cursor.execute(f'SELECT * FROM dnd5_spells order by spell_level')
     
 
-def equipamentos(id):
-    my_db = mysql.connector.connect(host="localhost", user="root", passwd="ma0506", database='dnddb', )
-    cursor = my_db.cursor()
-    cursor.execute(f"select * from equipamento where player_id = {id}")
-    for item in cursor:
-        print(item)
-    my_db.commit()
+#----------------------------------------CLASSES----------------------------------------
 
+class Player:
+    def __init__(self,nome):
+        self.nome=nome
+        self.vida=0
+        self.ca=0
+        self.classe="nenhum"
+        self.id=0
+        try:
+            self.conecta_player()
+        except:
+            print('')
 
+    def conecta_player(self):
+        my_db = mysql.connector.connect(host="localhost", user="root", passwd="ma0506", database='dnddb', )
+        cursor = my_db.cursor()
+        cursor.execute(f'SELECT * from player where nome = "{self.nome}"')
+        for item in cursor:
+            self.vida=item[1]
+            self.ca = item[2]
+            self.classe = item[3]
+            self.id = item[4]
+        print(self.nome, self.vida, self.ca, self.id)
 
-def inserir_equipamentos(nome, tipo, descriçao,id):
+    def busca_equipamentos(self,id_arma):
+        my_db = mysql.connector.connect(host="localhost", user="root", passwd="ma0506", database='dnddb', )
+        cursor = my_db.cursor()
+        cursor.execute(f"select * from equipamento where player_id = {id_arma}")
+        for item in cursor:
+            print(item)
+        my_db.commit()
 
-    my_db = mysql.connector.connect(host="localhost", user="root", passwd="ma0506", database='dnddb', )
-    cursor = my_db.cursor()
-    cursor.execute(f"insert into equipamento (`nome`,`tipo`, `descricao`, `player_id`) values ('{nome}','{tipo}','{descriçao}','{id}')")
-    my_db.commit()
+    def inserir_equipamentos(self,nomearma, tipo, descriçao, id):
 
-def remover_equipamentos(id):
-    my_db = mysql.connector.connect(host="localhost", user="root", passwd="ma0506", database='dnddb', )
-    cursor = my_db.cursor()
-    cursor.execute(f'delete from equipamento where player_id = "{id}"')
-    my_db.commit()
-
-
-
+        my_db = mysql.connector.connect(host="localhost", user="root", passwd="ma0506", database='dnddb', )
+        cursor = my_db.cursor()
+        cursor.execute(
+            f"insert into equipamento (`nome`,`tipo`, `descricao`, `player_id`) values ('{nomearma}','{tipo}','{descriçao}','{id}')")
+        my_db.commit()
+    def remover_equipamentos(self,id):
+        my_db = mysql.connector.connect(host="localhost", user="root", passwd="ma0506", database='dnddb', )
+        cursor = my_db.cursor()
+        cursor.execute(f'delete from equipamento where player_id = "{id}"')
+        my_db.commit()
 
 #----------------------------------------VARIAVEIS----------------------------------------
 
-nome = 'kibi'
+nome = 'caiden'
+player1 = Player(nome)
+
 cursor.execute(f"select id from player where nome= '{nome}'")
 for item in cursor:
     id=item[0]
 
+
 busca_dados(nome)
+
 #inserir_equipamentos("vorpal+3", "Ninkentou", "arma com habilidade de decepar membros com criticos 2d8 de dano cortante/perfurante", id)
 
 
 #----------------------------------------VISUAL----------------------------------------
 
 #----------------------------------------Buttons----------------------------------------
-btn_equipamentos = Button(root, text='Equipamentos', command=lambda:equipamentos(id))
+btn_equipamentos = Button(root, text='Equipamentos', command=lambda:player1.busca_equipamentos(id))
 btn_equipamentos.grid(row=5, column=0)
 
-btn_delete_equipamento = Button(root, text='Deletar Equipamento', command=lambda:remover_equipamentos(id))
+btn_delete_equipamento = Button(root, text='Deletar Equip', command=lambda:player1.remover_equipamentos(id))
 btn_delete_equipamento.grid(row=5, column=1)
 
-btn_inserirequipamentos = Button(root,text='Inserir', command=lambda:inserir_equipamentos())
+btn_inserirequipamentos = Button(root,text='Inserir Equip', command=lambda:player1.inserir_equipamentos())
 btn_inserirequipamentos.grid(row=5, column=2)
 #remover_equipamentos('')
 
@@ -128,6 +157,5 @@ lbl.grid(row='3',column='0')
 
 lbl = Label(root,text='Classe')
 lbl.grid(row='4',column='0')
-
 
 root.mainloop()
