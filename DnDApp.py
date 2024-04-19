@@ -100,14 +100,15 @@ class Player:
             print(item)
         my_db.commit()
 
-    def inserir_equipamentos(self,nomearma, tipo, descriçao, id):
+    def inserir_equipamentos(self,nome_equip, tipo, descriçao, id):
 
         my_db = mysql.connector.connect(host="localhost", user="root", passwd="ma0506", database='dnddb', )
         cursor = my_db.cursor()
         cursor.execute(
-            f"insert into equipamento (`nome`,`tipo`, `descricao`, `player_id`) values ('{nomearma}','{tipo}','{descriçao}','{id}')")
+            f"insert into equipamento (`nome`,`tipo`, `descricao`, `player_id`) values ('{nome_equip}','{tipo}','{descriçao}','{id}')")
         my_db.commit()
     def remover_equipamentos(self,id):
+
         my_db = mysql.connector.connect(host="localhost", user="root", passwd="ma0506", database='dnddb', )
         cursor = my_db.cursor()
         cursor.execute(f'delete from equipamento where player_id = "{id}"')
